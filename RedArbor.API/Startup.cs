@@ -31,18 +31,28 @@ namespace RedArbor.API
             services.AddSingleton(settings);
 
             DependencyInjectionProfile.RegisterProfile(services, null);
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI(c=>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Redarbor API V1");
+                c.RoutePrefix = string.Empty;
+            });
+            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/swagger/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -57,7 +67,7 @@ namespace RedArbor.API
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Redarbor}/{action=Index}/{id?}");
+                    pattern: "{controller=swagger}/{action=Index}/{id?}");
             });
         }
     }
