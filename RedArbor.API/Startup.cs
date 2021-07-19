@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using RedArbor.API.DI;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,25 @@ namespace RedArbor.API
 
             DependencyInjectionProfile.RegisterProfile(services, null);
 
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c=>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Redarbor API",
+                    Description = "Servicio de prueba Redarbor",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Diego Tellez",
+                        Email = "alx.diego@gmail.com"
+                    }
+                });
+
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,7 +61,7 @@ namespace RedArbor.API
             app.UseSwaggerUI(c=>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Redarbor API V1");
-                c.RoutePrefix = string.Empty;
+                c.RoutePrefix = string.Empty;                
             });
             
 
